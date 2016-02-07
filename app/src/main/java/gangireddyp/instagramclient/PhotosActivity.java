@@ -101,13 +101,13 @@ public class PhotosActivity extends AppCompatActivity {
             for (int i = 0; i < photosJSON.length(); i++) {
                 JSONObject photoJSON = photosJSON.getJSONObject(i);
                 InstragramPhoto photo = new InstragramPhoto();
+
+                //Metadata
                 photo.username = photoJSON.getJSONObject("user").getString("username");
                 photo.userphoto = photoJSON.getJSONObject("user").getString("profile_picture");
                 photo.caption = (!photoJSON.isNull("caption")) ? photoJSON.getJSONObject("caption").getString("text") : "";
-                photo.imageUrl = photoJSON.getJSONObject("images").getJSONObject("standard_resolution").getString("url");
                 photo.imageHeight = photoJSON.getJSONObject("images").getJSONObject("standard_resolution").getInt("height");
                 photo.likesCount = photoJSON.getJSONObject("likes").getInt("count");
-
                 if (!photoJSON.isNull("comments") && !photoJSON.getJSONObject("comments").isNull("data")) {
                     JSONArray commentsJSON = photoJSON.getJSONObject("comments").getJSONArray("data");
                     photo.usernameComments = new ArrayList<>();
@@ -119,6 +119,15 @@ public class PhotosActivity extends AppCompatActivity {
                     }
                 }
                 photo.timestamp = (!photoJSON.isNull("caption")) ? Long.parseLong(photoJSON.getJSONObject("caption").getString("created_time")) : 0;
+
+                //Media
+                photo.imageUrl = photoJSON.getJSONObject("images").getJSONObject("standard_resolution").getString("url");
+                photo.type = InstragramPhoto.Media.PHOTO;
+                if (photoJSON.getString("type").equals("video")) {
+                    photo.type = InstragramPhoto.Media.VIDEO;
+                    photo.videoUrl = photoJSON.getJSONObject("videos").getJSONObject("standard_resolution").getString("url");
+                }
+
                 photos.add(photo);
             }
         } catch (JSONException e) {

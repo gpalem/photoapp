@@ -12,10 +12,15 @@ import java.util.ArrayList;
 public class InstragramPhoto {
     private static String TAG = InstragramPhoto.class.getName();
     private static String instagramColor = "<font color=\"#125688\">";
+
+    public enum Media {PHOTO, VIDEO};
+    public Media type;
+
     public String username;
     public String userphoto;
     public String caption;
     public String imageUrl;
+    public String videoUrl;
     public int imageHeight;
     public int likesCount;
     public ArrayList<String> usernameComments;

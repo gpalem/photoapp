@@ -1,12 +1,16 @@
 package gangireddyp.instagramclient;
 
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
@@ -17,6 +21,7 @@ import java.util.List;
  * Created by gpalem on 2/4/16.
  */
 public class InstagramPhotosAdapter extends ArrayAdapter<InstragramPhoto> {
+    private static String TAG = InstagramPhotosAdapter.class.getName();
 
     public InstagramPhotosAdapter(Context context, List<InstragramPhoto> objects) {
         super(context, android.R.layout.simple_list_item_1, objects);
@@ -25,7 +30,7 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstragramPhoto> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //Get data
-        InstragramPhoto photo = getItem(position);
+        final InstragramPhoto photo = getItem(position);
         //Check recycled
         if (convertView == null) {
             //Create view
@@ -37,16 +42,66 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstragramPhoto> {
         TextView tvLikes = (TextView) convertView.findViewById(R.id.tvLikes);
         TextView tvTimeStamp = (TextView) convertView.findViewById(R.id.tvTimeStamp);
         TextView tvComments = (TextView) convertView.findViewById(R.id.tvComments);
+        final ImageButton ibVideo = (ImageButton) convertView.findViewById(R.id.ibVideo);
         RoundedImageView ivUserPhoto = (RoundedImageView) convertView.findViewById(R.id.ivUserPhoto);
-        ImageView ivPhoto = (ImageView) convertView.findViewById(R.id.ivPhoto);
+        final ImageView ivPhoto = (ImageView) convertView.findViewById(R.id.ivPhoto);
+        final VideoView vvVideo = (VideoView) convertView.findViewById(R.id.vvVideo);
 
-        //Set content
+        //Set media view
+        vvVideo.setVisibility(VideoView.INVISIBLE);
+        ivPhoto.setVisibility(ImageView.VISIBLE);
+        ibVideo.setVisibility(ImageButton.INVISIBLE);
+        if (photo.type == InstragramPhoto.Media.VIDEO) {
+            ibVideo.setVisibility(ImageButton.VISIBLE);
+            //Set Video view
+            vvVideo.setMediaController(null);
+            vvVideo.setVideoPath(photo.videoUrl);
+            vvVideo.requestFocus();
+            vvVideo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "Hi");
+                    if (vvVideo.isPlaying()) {
+                        vvVideo.pause();
+                    } else {
+                        vvVideo.start();
+                    }
+                }
+            });
+            vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    vvVideo.stopPlayback();
+                    ivPhoto.setVisibility(ImageView.VISIBLE);
+                    vvVideo.setVisibility(VideoView.INVISIBLE);
+                    ibVideo.setVisibility(ImageButton.VISIBLE);
+                }
+            });
+            ibVideo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ivPhoto.setVisibility(ImageView.INVISIBLE);
+                    vvVideo.setVisibility(VideoView.VISIBLE);
+                    ibVideo.setVisibility(ImageButton.INVISIBLE);
+                    vvVideo.start();
+                }
+            });
+        }
+
+        //Set Metadata View
         tvUser.setText(photo.getFormattedUserString());
         tvCaption.setText(photo.getFormattedCaptionString());
         tvLikes.setText(photo.getFormattedLikesString());
         tvTimeStamp.setText(photo.getAbbreviatedTimeSpan());
-        tvComments.setText(photo.getFormattedCommentString(photo.usernameComments.size() - 1));
-        //Insert the image using picasso
+        if (photo.usernameComments == null || photo.usernameComments.size() == 0) {
+            tvComments.setText("");
+            tvComments.setVisibility(TextView.GONE);
+        }
+        else {
+            tvComments.setText(photo.getFormattedCommentString(photo.usernameComments.size() - 1));
+        }
+
+        //Set Image views using picasso
         ivUserPhoto.setImageResource(0);
         Picasso.with(getContext()).load(photo.userphoto).placeholder(R.drawable.dp_launcher).into(ivUserPhoto);
         ivPhoto.setImageResource(0);
