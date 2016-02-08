@@ -36,7 +36,7 @@ public class InstragramPhoto {
 
         formatted += instagramColor;
         formatted += "<b>" + username + "</b></font>  "; //username
-        formatted += caption; //caption
+        formatted += "<font color=\"black\">" + caption + "</font>"; //caption
 
         return Html.fromHtml(formatted);
     }
@@ -51,7 +51,7 @@ public class InstragramPhoto {
         if (index < commentModel.size()) {
             formatted += instagramColor;
             formatted += "<b>" + commentModel.get(index).username + "</b></font>  "; //username
-            formatted += commentModel.get(index).comment; //comment
+            formatted += "<font color=\"black\">" + commentModel.get(index).comment + "</font>"; //comment
         }
         return Html.fromHtml(formatted);
     }

@@ -63,8 +63,8 @@
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             android:layout_gravity="center"
-            android:maxHeight="15dp"
-            android:maxWidth="15dp"/>
+            android:maxHeight="12dp"
+            android:maxWidth="12dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -95,20 +95,14 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
-    <com.makeramen.roundedimageview.RoundedImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/video_icon"
         android:id="@+id/ibVideo"
-        android:scaleType="fitCenter"
         android:layout_below="@+id/llHeader"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        app:riv_corner_radius="30dip"
-        app:riv_mutate_background="true"
-        app:riv_tile_mode="repeat"
-        app:riv_oval="true" />
+        android:layout_alignParentEnd="true" />
 
     <VideoView
         android:layout_width="fill_parent"
@@ -132,12 +126,24 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="tvComments"
+        android:text="tvComments1"
         android:maxLines="2"
         android:ellipsize="end"
-        android:id="@+id/tvComments"
+        android:id="@+id/tvComments1"
         android:layout_below="@+id/tvMoreComments"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="tvComments2"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:id="@+id/tvComments2"
+        android:layout_below="@+id/tvComments1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 
 </RelativeLayout>

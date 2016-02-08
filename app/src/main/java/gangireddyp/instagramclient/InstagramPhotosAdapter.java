@@ -3,7 +3,6 @@ package gangireddyp.instagramclient;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,9 +41,10 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstragramPhoto> {
         TextView tvCaption = (TextView) convertView.findViewById(R.id.tvCaption);
         TextView tvLikes = (TextView) convertView.findViewById(R.id.tvLikes);
         TextView tvTimeStamp = (TextView) convertView.findViewById(R.id.tvTimeStamp);
-        TextView tvComments = (TextView) convertView.findViewById(R.id.tvComments);
+        TextView tvComments1 = (TextView) convertView.findViewById(R.id.tvComments1);
+        TextView tvComments2 = (TextView) convertView.findViewById(R.id.tvComments2);
         TextView tvMoreComments = (TextView) convertView.findViewById(R.id.tvMoreComments);
-        final RoundedImageView ibVideo = (RoundedImageView) convertView.findViewById(R.id.ibVideo);
+        final ImageButton ibVideo = (ImageButton) convertView.findViewById(R.id.ibVideo);
         RoundedImageView ivUserPhoto = (RoundedImageView) convertView.findViewById(R.id.ivUserPhoto);
         final ImageView ivPhoto = (ImageView) convertView.findViewById(R.id.ivPhoto);
         final VideoView vvVideo = (VideoView) convertView.findViewById(R.id.vvVideo);
@@ -62,7 +62,6 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstragramPhoto> {
             vvVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i(TAG, "Hi");
                     if (vvVideo.isPlaying()) {
                         vvVideo.pause();
                     } else {
@@ -95,22 +94,33 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstragramPhoto> {
         tvCaption.setText(photo.getFormattedCaptionString());
         tvLikes.setText(photo.getFormattedLikesString());
         tvTimeStamp.setText(photo.getAbbreviatedTimeSpan());
+        //Comments Views
+        tvComments1.setVisibility(TextView.VISIBLE);
+        tvComments2.setVisibility(TextView.VISIBLE);
+        tvMoreComments.setVisibility(TextView.VISIBLE);
         if (photo.commentModel == null || photo.commentModel.size() == 0) {
-            tvComments.setText("");
+            tvComments1.setText("");
+            tvComments2.setText("");
             tvMoreComments.setText("");
-            tvComments.setVisibility(TextView.GONE);
+            tvComments1.setVisibility(TextView.GONE);
+            tvComments2.setVisibility(TextView.GONE);
             tvMoreComments.setVisibility(TextView.GONE);
         }
         else {
-            tvComments.setText(photo.getFormattedCommentString(photo.commentModel.size() - 1));
+            tvComments1.setText(photo.getFormattedCommentString(photo.commentModel.size() - 1));
             if (photo.commentModel.size() == 1) {
+                tvComments2.setText("");
                 tvMoreComments.setText("");
+                tvComments2.setVisibility(TextView.GONE);
                 tvMoreComments.setVisibility(TextView.GONE);
             }
             else if (photo.commentModel.size() == 2) {
-                tvMoreComments.setText(photo.getFormattedCommentString(0));
+                tvComments2.setText(photo.getFormattedCommentString(0));
+                tvMoreComments.setText("");
+                tvMoreComments.setVisibility(TextView.GONE);
             }
             else {
+                tvComments2.setText(photo.getFormattedCommentString(photo.commentModel.size()-2));
                 tvMoreComments.setText(Html.fromHtml("<font color=\"LightGray\">View all " + String.valueOf(photo.commentModel.size()) + " comments</font>"));
             }
         }
