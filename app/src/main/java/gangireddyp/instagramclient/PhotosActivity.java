@@ -1,5 +1,6 @@
 package gangireddyp.instagramclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,8 @@ public class PhotosActivity extends AppCompatActivity {
     public String CLIENT_ID;
     public String popularEndPointUrl;
 
+    private final int DISPLAY_COMMENTS_CODE = 1;
+
     ArrayList<InstragramPhoto> photos;
     public InstagramPhotosAdapter adapterPhotos;
 
@@ -37,6 +40,10 @@ public class PhotosActivity extends AppCompatActivity {
         popularEndPointUrl = "https://api.instagram.com/v1/media/popular?client_id=" + CLIENT_ID;
 
         photos = new ArrayList<>();
+        //Set Global Application data
+        final GlobalData data = (GlobalData) getApplicationContext();
+        data.setMediaData(photos);
+
         //Create Adapter and link to source
         adapterPhotos = new InstagramPhotosAdapter(this, photos);
         ListView lvPhotos = (ListView) findViewById(R.id.lvPhotos);
@@ -58,6 +65,12 @@ public class PhotosActivity extends AppCompatActivity {
 
         //Get popular photos
         fetchPopularPhotos();
+    }
+
+    public void fireCommentsIntent(int position) {
+        Intent commentsIntent = new Intent(PhotosActivity.this, UserCommentsActivity.class);
+        commentsIntent.putExtra("position", position);
+        startActivityForResult(commentsIntent, DISPLAY_COMMENTS_CODE);
     }
 
     public void fetchPopularPhotos() {
@@ -110,12 +123,15 @@ public class PhotosActivity extends AppCompatActivity {
                 photo.likesCount = photoJSON.getJSONObject("likes").getInt("count");
                 if (!photoJSON.isNull("comments") && !photoJSON.getJSONObject("comments").isNull("data")) {
                     JSONArray commentsJSON = photoJSON.getJSONObject("comments").getJSONArray("data");
-                    photo.usernameComments = new ArrayList<>();
-                    photo.userComments = new ArrayList<>();
+                    photo.commentModel = new ArrayList<>();
                     for (int j = 0; j < commentsJSON.length(); j++) {
-                        JSONObject comment = commentsJSON.getJSONObject(j);
-                        photo.usernameComments.add(comment.getJSONObject("from").getString("username"));
-                        photo.userComments.add(comment.getString("text"));
+                        JSONObject commentJSON = commentsJSON.getJSONObject(j);
+                        CommentModel comment = new CommentModel();
+                        comment.username = commentJSON.getJSONObject("from").getString("username");
+                        comment.comment = commentJSON.getString("text");
+                        comment.imageUrl = commentJSON.getJSONObject("from").getString("profile_picture");
+                        comment.timestamp = Long.parseLong(commentJSON.getString("created_time"));
+                        photo.commentModel.add(comment);
                     }
                 }
                 photo.timestamp = (!photoJSON.isNull("caption")) ? Long.parseLong(photoJSON.getJSONObject("caption").getString("created_time")) : 0;
@@ -133,5 +149,10 @@ public class PhotosActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //TODO fill in details if needed.
     }
 }

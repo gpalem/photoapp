@@ -2,6 +2,7 @@ package gangireddyp.instagramclient;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,7 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstragramPhoto> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         //Get data
         final InstragramPhoto photo = getItem(position);
         //Check recycled
@@ -42,7 +43,8 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstragramPhoto> {
         TextView tvLikes = (TextView) convertView.findViewById(R.id.tvLikes);
         TextView tvTimeStamp = (TextView) convertView.findViewById(R.id.tvTimeStamp);
         TextView tvComments = (TextView) convertView.findViewById(R.id.tvComments);
-        final ImageButton ibVideo = (ImageButton) convertView.findViewById(R.id.ibVideo);
+        TextView tvMoreComments = (TextView) convertView.findViewById(R.id.tvMoreComments);
+        final RoundedImageView ibVideo = (RoundedImageView) convertView.findViewById(R.id.ibVideo);
         RoundedImageView ivUserPhoto = (RoundedImageView) convertView.findViewById(R.id.ivUserPhoto);
         final ImageView ivPhoto = (ImageView) convertView.findViewById(R.id.ivPhoto);
         final VideoView vvVideo = (VideoView) convertView.findViewById(R.id.vvVideo);
@@ -93,13 +95,31 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstragramPhoto> {
         tvCaption.setText(photo.getFormattedCaptionString());
         tvLikes.setText(photo.getFormattedLikesString());
         tvTimeStamp.setText(photo.getAbbreviatedTimeSpan());
-        if (photo.usernameComments == null || photo.usernameComments.size() == 0) {
+        if (photo.commentModel == null || photo.commentModel.size() == 0) {
             tvComments.setText("");
+            tvMoreComments.setText("");
             tvComments.setVisibility(TextView.GONE);
+            tvMoreComments.setVisibility(TextView.GONE);
         }
         else {
-            tvComments.setText(photo.getFormattedCommentString(photo.usernameComments.size() - 1));
+            tvComments.setText(photo.getFormattedCommentString(photo.commentModel.size() - 1));
+            if (photo.commentModel.size() == 1) {
+                tvMoreComments.setText("");
+                tvMoreComments.setVisibility(TextView.GONE);
+            }
+            else if (photo.commentModel.size() == 2) {
+                tvMoreComments.setText(photo.getFormattedCommentString(0));
+            }
+            else {
+                tvMoreComments.setText(Html.fromHtml("<font color=\"LightGray\">View all " + String.valueOf(photo.commentModel.size()) + " comments</font>"));
+            }
         }
+        tvMoreComments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((PhotosActivity) getContext()).fireCommentsIntent(position);
+            }
+        });
 
         //Set Image views using picasso
         ivUserPhoto.setImageResource(0);

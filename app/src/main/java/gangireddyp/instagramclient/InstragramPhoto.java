@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public class InstragramPhoto {
     private static String TAG = InstragramPhoto.class.getName();
-    private static String instagramColor = "<font color=\"#125688\">";
+    protected static String instagramColor = "<font color=\"#125688\">";
 
     public enum Media {PHOTO, VIDEO};
     public Media type;
@@ -23,8 +23,7 @@ public class InstragramPhoto {
     public String videoUrl;
     public int imageHeight;
     public int likesCount;
-    public ArrayList<String> usernameComments;
-    public ArrayList<String> userComments;
+    public ArrayList<CommentModel> commentModel;
     public long timestamp;
 
     public Spanned getFormattedUserString() {
@@ -36,7 +35,7 @@ public class InstragramPhoto {
         String formatted = "";
 
         formatted += instagramColor;
-        formatted += "<b>@" + username + "</b></font>  "; //username
+        formatted += "<b>" + username + "</b></font>  "; //username
         formatted += caption; //caption
 
         return Html.fromHtml(formatted);
@@ -49,10 +48,10 @@ public class InstragramPhoto {
 
     public Spanned getFormattedCommentString(int index) {
         String formatted = "";
-        if (index < usernameComments.size()) {
+        if (index < commentModel.size()) {
             formatted += instagramColor;
-            formatted += "<b>@" + usernameComments.get(index) + "</b></font>  "; //username
-            formatted += userComments.get(index); //comment
+            formatted += "<b>" + commentModel.get(index).username + "</b></font>  "; //username
+            formatted += commentModel.get(index).comment; //comment
         }
         return Html.fromHtml(formatted);
     }
